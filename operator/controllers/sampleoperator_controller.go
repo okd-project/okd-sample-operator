@@ -130,12 +130,12 @@ func (r *SampleOperatorReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 	if numAvailable < pod.Spec.Replicas {
 		log.Info("Scaling up pods", "Currently available", numAvailable, "Required replicas", pod.Spec.Replicas)
 		// Define a new Pod object
-		pod := createPod(pod)
-		// Set PodSet instance as the owner and controller
-		if err := controllerutil.SetControllerReference(pod, pod, r.Scheme); err != nil {
+		newPod := createPod(pod)
+		// Set SampleOperator instance as the owner and controller
+		if err := controllerutil.SetControllerReference(pod, newPod, r.Scheme); err != nil {
 			return ctrl.Result{}, err
 		}
-		err = r.Create(context.TODO(), pod)
+		err = r.Create(context.TODO(), newPod)
 		if err != nil {
 			log.Error(err, "Failed to create pod", "pod.name", pod.Name)
 			return ctrl.Result{}, err
