@@ -43,6 +43,7 @@ type SampleOperatorReconciler struct {
 //+kubebuilder:rbac:groups=app.okd.io,resources=sampleoperators,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=app.okd.io,resources=sampleoperators/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=app.okd.io,resources=sampleoperators/finalizers,verbs=update
+//+kubebuilder:rbac:groups="",resources=pods,verbs=get;list;watch;create;update;patch;delete
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
@@ -108,9 +109,11 @@ func (r *SampleOperatorReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 		pod.Status = status
 		err = r.Status().Update(context.TODO(), pod)
 		if err != nil {
-			log.Error(err, "Failed to update PodSet status")
-			return ctrl.Result{}, err
+			// update may take a couple of cycles so lets re-try
+			return ctrl.Result{Requeue: true}, nil
 		}
+		log.Info("Status info", "current status", status)
+		return ctrl.Result{}, err
 	}
 
 	if numAvailable > pod.Spec.Replicas {
