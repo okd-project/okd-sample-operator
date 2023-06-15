@@ -102,9 +102,9 @@ go mod tidy
 
 ### Step 7
 ```
-MATCH_NAMESPACE=sample-operator  KUBECONFIG=/<path-to-kubeconfig>/config make deploy
+MATCH_NAMESPACE=operator-system  KUBECONFIG=/<path-to-kubeconfig>/config make deploy
 
-MATCH_NAMESPACE=sample-operator  KUBECONFIG=/<path-to-kubeconfig>/config make run
+MATCH_NAMESPACE=operator-system  KUBECONFIG=/<path-to-kubeconfig>/config make run
 ```
 
 ```
