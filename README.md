@@ -29,7 +29,7 @@ The following is the workflow for a new Go-based Operator with the Operator SDK:
  11. Use the okd-operator-pipeline to build, bundle and create a catalog for you new operator
 
 
-### Prerequiesets
+### Prerequisites 
 
 To start you will neeed the following software packages
 
