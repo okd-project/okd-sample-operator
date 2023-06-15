@@ -1,0 +1,12 @@
+apiVersion: app.okd.io/v1alpha1
+kind: SampleOperator
+metadata:
+  labels:
+    app.kubernetes.io/name: sampleoperator
+    app.kubernetes.io/instance: sampleoperator-instance
+    app.kubernetes.io/part-of: operator
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: operator
+  name: sampleoperator-instance
+spec:
+  replicas: 2
