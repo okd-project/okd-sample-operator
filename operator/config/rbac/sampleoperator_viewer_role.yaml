@@ -1,0 +1,27 @@
+# permissions for end users to view sampleoperators.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: clusterrole
+    app.kubernetes.io/instance: sampleoperator-viewer-role
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/created-by: operator
+    app.kubernetes.io/part-of: operator
+    app.kubernetes.io/managed-by: kustomize
+  name: sampleoperator-viewer-role
+rules:
+- apiGroups:
+  - app.okd.io
+  resources:
+  - sampleoperators
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - app.okd.io
+  resources:
+  - sampleoperators/status
+  verbs:
+  - get
