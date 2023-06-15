@@ -9,13 +9,13 @@ metadata:
     app.kubernetes.io/created-by: operator
     app.kubernetes.io/part-of: operator
     app.kubernetes.io/managed-by: kustomize
-  name: system
+  name: operator-system
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: controller-manager
-  namespace: system
+  namespace: operator-system
   labels:
     control-plane: controller-manager
     app.kubernetes.io/name: deployment
@@ -70,7 +70,7 @@ spec:
         - /manager
         args:
         - --leader-elect
-        image: controller:latest
+        image: quay.io/okd/sample-operator:v0.0.1
         name: manager
         securityContext:
           allowPrivilegeEscalation: false

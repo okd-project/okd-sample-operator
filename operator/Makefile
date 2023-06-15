@@ -29,7 +29,10 @@ BUNDLE_METADATA_OPTS ?= $(BUNDLE_CHANNELS) $(BUNDLE_DEFAULT_CHANNEL)
 #
 # For example, running 'make bundle-build bundle-push catalog-build catalog-push' will build and push both
 # okd.io/operator-bundle:$VERSION and okd.io/operator-catalog:$VERSION.
-IMAGE_TAG_BASE ?= okd.io/operator
+IMAGE_TAG_BASE ?= quay.io/okd/sample-operator
+
+# Image version to to build/push
+IMG_VERSION ?= v0.0.1
 
 # BUNDLE_IMG defines the image:tag used for the bundle.
 # You can use it as an arg. (E.g make bundle-build BUNDLE_IMG=<some-registry>/<project-name-bundle>:<tag>)
@@ -47,7 +50,8 @@ ifeq ($(USE_IMAGE_DIGESTS), true)
 endif
 
 # Image URL to use all building/pushing image targets
-IMG ?= controller:latest
+IMG ?= $(IMAGE_TAG_BASE):$(IMG_VERSION)
+
 # ENVTEST_K8S_VERSION refers to the version of kubebuilder assets to be downloaded by envtest binary.
 ENVTEST_K8S_VERSION = 1.26.0
 
@@ -57,6 +61,9 @@ GOBIN=$(shell go env GOPATH)/bin
 else
 GOBIN=$(shell go env GOBIN)
 endif
+
+# CONTAINER_ENGINE defines which container executable to use
+CONTAINER_ENGINE ?= podman
 
 # Setting SHELL to bash allows bash commands to be executed by recipes.
 # Options are set to exit when a recipe line exits non-zero or a piped command fails.
@@ -116,15 +123,13 @@ run: manifests generate fmt vet ## Run a controller from your host.
 	go run ./main.go
 
 # If you wish built the manager image targeting other platforms you can use the --platform flag.
-# (i.e. docker build --platform linux/arm64 ). However, you must enable docker buildKit for it.
-# More info: https://docs.docker.com/develop/develop-images/build_enhancements/
-.PHONY: docker-build
-docker-build: test ## Build docker image with the manager.
-	docker build -t ${IMG} .
+.PHONY: image-build
+image-build: test ## Build docker image with the manager.
+	$(CONTAINER_ENGINE) build -t ${IMG} .
 
-.PHONY: docker-push
-docker-push: ## Push docker image with the manager.
-	docker push ${IMG}
+.PHONY: image-push
+image-push: ## Push docker image with the manager.
+	$(CONTAINER_ENGINE) push ${IMG}
 
 # PLATFORMS defines the target platforms for  the manager image be build to provide support to multiple
 # architectures. (i.e. make docker-buildx IMG=myregistry/mypoperator:0.0.1). To use this option you need to:
@@ -133,14 +138,14 @@ docker-push: ## Push docker image with the manager.
 # - be able to push the image for your registry (i.e. if you do not inform a valid value via IMG=<myregistry/image:<tag>> then the export will fail)
 # To properly provided solutions that supports more than one platform you should use this option.
 PLATFORMS ?= linux/arm64,linux/amd64,linux/s390x,linux/ppc64le
-.PHONY: docker-buildx
-docker-buildx: test ## Build and push docker image for the manager for cross-platform support
+.PHONY: image-buildx
+image-buildx: test ## Build and push docker image for the manager for cross-platform support
 	# copy existing Dockerfile and insert --platform=${BUILDPLATFORM} into Dockerfile.cross, and preserve the original Dockerfile
 	sed -e '1 s/\(^FROM\)/FROM --platform=\$$\{BUILDPLATFORM\}/; t' -e ' 1,// s//FROM --platform=\$$\{BUILDPLATFORM\}/' Dockerfile > Dockerfile.cross
-	- docker buildx create --name project-v3-builder
-	docker buildx use project-v3-builder
-	- docker buildx build --push --platform=$(PLATFORMS) --tag ${IMG} -f Dockerfile.cross .
-	- docker buildx rm project-v3-builder
+	- $(CONTAINER_ENGINE) buildx create --name project-v3-builder
+	$(CONTAINER_ENGINE) buildx use project-v3-builder
+	- $(CONTAINER_ENGINE) buildx build --push --platform=$(PLATFORMS) --tag ${IMG} -f Dockerfile.cross .
+	- $(CONTAINER_ENGINE) buildx rm project-v3-builder
 	rm Dockerfile.cross
 
 ##@ Deployment
@@ -179,7 +184,7 @@ CONTROLLER_GEN ?= $(LOCALBIN)/controller-gen
 ENVTEST ?= $(LOCALBIN)/setup-envtest
 
 ## Tool Versions
-KUSTOMIZE_VERSION ?= v3.8.7
+KUSTOMIZE_VERSION ?= v5.0.3
 CONTROLLER_TOOLS_VERSION ?= v0.11.1
 
 KUSTOMIZE_INSTALL_SCRIPT ?= "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"
@@ -212,11 +217,11 @@ bundle: manifests kustomize ## Generate bundle manifests and metadata, then vali
 
 .PHONY: bundle-build
 bundle-build: ## Build the bundle image.
-	docker build -f bundle.Dockerfile -t $(BUNDLE_IMG) .
+	$(CONTAINER_ENGINE) build -f bundle.Dockerfile -t $(BUNDLE_IMG) .
 
 .PHONY: bundle-push
 bundle-push: ## Push the bundle image.
-	$(MAKE) docker-push IMG=$(BUNDLE_IMG)
+	$(MAKE) image-push IMG=$(BUNDLE_IMG)
 
 .PHONY: opm
 OPM = ./bin/opm
@@ -257,4 +262,4 @@ catalog-build: opm ## Build a catalog image.
 # Push the catalog image.
 .PHONY: catalog-push
 catalog-push: ## Push a catalog image.
-	$(MAKE) docker-push IMG=$(CATALOG_IMG)
+	$(MAKE) image-push IMG=$(CATALOG_IMG)

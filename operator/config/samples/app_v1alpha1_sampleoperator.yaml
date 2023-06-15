@@ -8,5 +8,6 @@ metadata:
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/created-by: operator
   name: sampleoperator-instance
+  namespace: operator-system
 spec:
   replicas: 2
