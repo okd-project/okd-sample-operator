@@ -114,8 +114,20 @@ test: manifests generate fmt vet envtest ## Run tests.
 
 ##@ Build
 
+PACKAGE=github.com/okd-project/okd-sample-operators
+GOBUILD_VERSION_ARGS = -ldflags "-X $(PACKAGE)/pkg/version.SHORTCOMMIT=$(SHORTCOMMIT) -X $(PACKAGE)/pkg/version.COMMIT=$(COMMIT)"
+MAIN_PACKAGE=$(PACKAGE)
+BIN=bin/$(lastword $(subst /, ,$(MAIN_PACKAGE)))
+BIN_DIR=$(shell pwd)/bin
+
+
+.PHONY: build-operator
+build-operator: ## Build operator binary, no additional checks or code generation
+	$(GO) build $(GOBUILD_VERSION_ARGS) -o $(BIN) $(MAIN_PACKAGE)
+
+
 .PHONY: build
-build: manifests generate fmt vet ## Build manager binary.
+build: manifests generate fmt vet build-operator ## Build manager binary.
 	go build -o bin/manager main.go
 
 .PHONY: run
