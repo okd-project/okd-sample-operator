@@ -71,6 +71,7 @@ func (r *SampleOperatorReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 		return ctrl.Result{}, err
 	}
 
+	// List all pods (using the selector label)
 	pod := instance
 	podList := &corev1.PodList{}
 	lbs := map[string]string{
@@ -83,7 +84,7 @@ func (r *SampleOperatorReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 		return ctrl.Result{}, err
 	}
 
-	// Count the pods that are pending or running as available
+	// count the pods that are pending or running as available
 	var available []corev1.Pod
 	for _, pod := range podList.Items {
 		if pod.ObjectMeta.DeletionTimestamp != nil {
@@ -94,13 +95,14 @@ func (r *SampleOperatorReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 		}
 	}
 
+	// calculate avaliable pods - used to update status
 	numAvailable := int32(len(available))
 	availableNames := []string{}
 	for _, pod := range available {
 		availableNames = append(availableNames, pod.ObjectMeta.Name)
 	}
 
-	// Update the status if necessary
+	// update the status if necessary (check is status has changed)
 	status := appv1alpha1.SampleOperatorStatus{
 		PodNames:          availableNames,
 		AvailableReplicas: numAvailable,
@@ -116,6 +118,7 @@ func (r *SampleOperatorReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 		return ctrl.Result{}, err
 	}
 
+	// scale down if desired replicas is less than current
 	if numAvailable > pod.Spec.Replicas {
 		log.Info("Scaling down pods", "Currently available", numAvailable, "Required replicas", pod.Spec.Replicas)
 		diff := numAvailable - pod.Spec.Replicas
@@ -130,14 +133,16 @@ func (r *SampleOperatorReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 		return ctrl.Result{Requeue: true}, nil
 	}
 
+	// scale up if desired replicas is more than current
 	if numAvailable < pod.Spec.Replicas {
 		log.Info("Scaling up pods", "Currently available", numAvailable, "Required replicas", pod.Spec.Replicas)
-		// Define a new Pod object
+		// define a new Pod object
 		newPod := createPod(pod)
-		// Set SampleOperator instance as the owner and controller
+		// set SampleOperator instance as the owner and controller
 		if err := controllerutil.SetControllerReference(pod, newPod, r.Scheme); err != nil {
 			return ctrl.Result{}, err
 		}
+		// create the pod
 		err = r.Create(context.TODO(), newPod)
 		if err != nil {
 			log.Error(err, "Failed to create pod", "pod.name", pod.Name)
@@ -149,7 +154,7 @@ func (r *SampleOperatorReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 	return ctrl.Result{}, nil
 }
 
-// createPod returns a busybox pod with the same name/namespace as the cr
+// createPod - utility function that returns a busybox pod with the same name/namespace as the cr
 func createPod(cr *appv1alpha1.SampleOperator) *corev1.Pod {
 	labels := map[string]string{
 		"app":     cr.Name,

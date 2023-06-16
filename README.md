@@ -42,6 +42,13 @@ To start you will neeed the following software packages
 There is a script in this repo to assist in getting the epackages for 
 linux only, please contribute to get brew install etc for mac
 
+Clone the repo 
+
+```
+git clone https://github.com/okd-project/okd-sample-operator
+cd okd-sample-operator
+```
+
 Execute the script 
 
 ```
@@ -51,19 +58,26 @@ sudo ./operator-software-util.sh
 
 Once all the packages have been installed we are ready to start with the scaffolding of the operator
 
-#### Step 1
+**NB** A complete solution is provided in this repository (see the **solution** directory)
+
+### Step 1
+
+Create a project directory for your project and initialize the project
 
 ```
 mkdir operator
 cd operator
 operator-sdk init --domain okd.io --repo github.com/okd-project/sample-operator
 ```
-#### Step 2
+
+### Step 2
+
+Create a simple SampleOperator API
 
 ```
 operator-sdk create api --group=app --version=v1alpha1 --kind=SampleOperator --resource --controller
 ```
-#### Step 3
+### Step 3
 
 In the file sampleoperator_types.go inside of operator/api/v1aplpha1 change the following code:
 
@@ -71,7 +85,7 @@ In the file sampleoperator_types.go inside of operator/api/v1aplpha1 change the 
 // SampleOperatorSpec defines the desired state of SampleOperator
 type SampleOperatorSpec struct {
 	// +kubebuilder:validation:Minimum=1
-	// +kubebuilder:validation:Maximum=2
+	// +kubebuilder:validation:Maximum=5
 	Replicas int32 `json:"replicas,omitempty"`
 }
 
@@ -82,38 +96,50 @@ type SampleOperatorStatus struct {
 }
 ```
 
-#### Step 4
+### Step 4
+
+If you are editing the API definitions (as in Step 3), generate the manifests such 
+as CustomResource's or CustomResourceDefinition's by executing the following
+
 
 ```
 make generate
 make manifests
 ```
 
-#### Step 5
+### Step 5
+
 Edit the controllers/sampleoperator_controller.go file
 
 Refer to the solution folder (to copy the sampleoperator_controler.go worked out example)
 
+*For more detailed information in what is being done in the controller
+please read the comments*
+
 ### Step 6 
+
+As we have updated the sampleoperator_controller.go file and added dependencies execute the following
 
 ```
 go mod tidy
 ```
 
 ### Step 7
-```
-MATCH_NAMESPACE=operator-system  KUBECONFIG=/<path-to-kubeconfig>/config make deploy
-
-MATCH_NAMESPACE=operator-system  KUBECONFIG=/<path-to-kubeconfig>/config make run
-```
+To deploy and execute the controller (run locally so that we can verify/debug)
+execute the following
 
 ```
-cat config/samples/app_v1alpha1_sampleoperator.yaml
+KUBECONFIG=/<path-to-kubeconfig> make deploy
+
+# scale down the manager (so we can run locally)
+kubectl scale deployment.apps/operator-controller-manager -n operator-system  --replicas=0
+
+KUBECONFIG=/<path-to-kubeconfig> make run
 ```
 
 ### Step 8
 
-edit the file config/samples/app_v1alpha1_sampleoperator.yaml to show the folling
+Edit the file config/samples/app_v1alpha1_sampleoperator.yaml to show the folling
 
 ```
 apiVersion: app.okd.io/v1alpha1
@@ -129,10 +155,30 @@ metadata:
 spec:
   replicas: 2
 ```
+
 Apply the changes
 
 ```
-oc apply -f config/samples/app_v1alpha1_sampleoperator.yaml
-oc get pods
+kubectl apply -f config/samples/app_v1alpha1_sampleoperator.yaml
+kubectl get pods
 
 ```
+
+### Step 9
+
+Check the status of the controller
+
+```
+kubectl get sampleoperators.app.okd.io sample-instance -n operator-system -o yaml 
+```
+
+### Conclusion
+
+This is an extremely simple solution, you may want to add other types of objects to watch/deploy
+
+Use the makefile to build and push your specific version to a registry
+
+The project **okd-operator-pipeline** can now be utilized to build, deploy and create a catalog for this operator.
+
+For more information about developing an operator please refer to the documentation for 
+[Operator SDK](https://sdk.operatorframework.io/docs/building-operators/golang/quickstart/)
