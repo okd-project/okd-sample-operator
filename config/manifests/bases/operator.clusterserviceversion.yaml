@@ -15,8 +15,8 @@ spec:
       kind: SampleOperator
       name: sampleoperators.app.okd.io
       version: v1alpha1
-  description: a simple quick start operator (for the okd-community)
-  displayName: okd-sample-operator
+  description: okd sample operator (quick-start)
+  displayName: SampleOperator
   icon:
   - base64data: ""
     mediatype: ""
@@ -25,20 +25,18 @@ spec:
       deployments: null
     strategy: ""
   installModes:
-  - supported: true
+  - supported: false
     type: OwnNamespace
   - supported: false
     type: SingleNamespace
   - supported: false
     type: MultiNamespace
-  - supported: false
+  - supported: true
     type: AllNamespaces
   keywords:
-  - sample
-  - operator
-  - quick-start
+  - okd-sample-operator
   links:
-  - name: Operator
+  - name: Source Code
     url: https://github.com/okd-project/okd-sample-operator
   maintainers:
   - email: aguidih@redhat.com
@@ -47,6 +45,6 @@ spec:
     name: luigi
   maturity: alpha
   provider:
-    name: okd-team
+    name: okd.io
     url: okd.io
   version: 0.0.1
