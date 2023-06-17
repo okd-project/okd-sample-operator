@@ -186,6 +186,18 @@ kubectl get sampleoperators.app.okd.io sample-instance -n operator-system -o yam
 
 You can also see the ouptut of the terminal (where you launched *make run*)
 
+
+### Step 10
+
+Once you are satisfied with all your changes you can go ahead and create a bundle 
+(this will be used in the pipeline) 
+
+```
+# a command line prompt is used to input relevant info 
+make bundle
+
+```
+
 ### Conclusion
 
 This is an extremely simple solution, you may want to add other types of objects to watch/deploy
