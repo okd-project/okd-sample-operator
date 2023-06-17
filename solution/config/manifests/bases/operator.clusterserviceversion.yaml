@@ -4,7 +4,7 @@ metadata:
   annotations:
     alm-examples: '[]'
     capabilities: Basic Install
-  name: operator.v0.0.0
+  name: operator.v0.0.1
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
@@ -15,7 +15,7 @@ spec:
       kind: SampleOperator
       name: sampleoperators.app.okd.io
       version: v1alpha1
-  description: a simple quick start operator (for okd-community)
+  description: a simple quick start operator (for the okd-community)
   displayName: okd-sample-operator
   icon:
   - base64data: ""
@@ -25,13 +25,13 @@ spec:
       deployments: null
     strategy: ""
   installModes:
-  - supported: false
+  - supported: true
     type: OwnNamespace
   - supported: false
     type: SingleNamespace
   - supported: false
     type: MultiNamespace
-  - supported: true
+  - supported: false
     type: AllNamespaces
   keywords:
   - sample
@@ -39,14 +39,14 @@ spec:
   - quick-start
   links:
   - name: Operator
-    url: https://operator.domain
+    url: https://github.com/okd-project/okd-sample-operator
   maintainers:
-  - email: aguidh@redhat.com
+  - email: aguidih@redhat.com
     name: alex
-  - email: luzuccar@redhta.com
+  - email: luzuccar@redhat.com
     name: luigi
   maturity: alpha
   provider:
     name: okd-team
     url: okd.io
-  version: 0.0.0
+  version: 0.0.1

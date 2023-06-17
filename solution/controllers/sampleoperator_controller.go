@@ -95,7 +95,7 @@ func (r *SampleOperatorReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 		}
 	}
 
-	// calculate avaliable pods - used to update status
+	// calculate available pods - used to update status
 	numAvailable := int32(len(available))
 	availableNames := []string{}
 	for _, pod := range available {

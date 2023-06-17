@@ -2,7 +2,7 @@
 
 A simple quick-start introduction on how to build an operator from scratch
 
-This project assumes you have somew knowledge of golang and a high level understanding of operators
+This project assumes you have knowledge of golang and at least some level of understanding of operators
 
 ### What is the Operator SDK?
 
@@ -38,8 +38,9 @@ To start you will neeed the following software packages
 - operator-sdk
 - opm
 - kustomize
+- go tools (controller-gen,setup-envtest)
 
-There is a script in this repo to assist in getting the epackages for 
+There is a script in this repo to assist in getting the packages for 
 linux only, please contribute to get brew install etc for mac
 
 Clone the repo 
@@ -60,12 +61,16 @@ Once all the packages have been installed we are ready to start with the scaffol
 
 **NB** A complete solution is provided in this repository (see the **solution** directory)
 
+We have provided an opinionated **Makefile** in the solution directory (it's been tailored to use in the okd-operator-pipeline). 
+We recommend making a backup of the Makefile generated in *Step 1* and copy the solution/Makefile to the base directory
+
+
 ### Step 1
 
 Create and initialize the project
 
 **N.B.** The operator-sdk init expects the base directory to be empty (i.e no files etc).
-Move the README.md and operator-software-util.sh to a tmp working directory (out of the base directory) for now
+Move the *README.md* and *operator-software-util.sh* to a tmp working directory (out of the base directory) for now
 
 ```
 operator-sdk init --domain okd.io --repo github.com/okd-project/sample-operator
@@ -102,6 +107,8 @@ type SampleOperatorStatus struct {
 If you are editing the API definitions (as in Step 3), generate the manifests such 
 as CustomResource's or CustomResourceDefinition's by executing the following
 
+**N.B.** Remember to make a backup of the current *Makefile* and copy the *solution/Makefile* to the base directory
+
 
 ```
 make generate
@@ -115,7 +122,7 @@ Edit the controllers/sampleoperator_controller.go file
 Refer to the solution folder (to copy the sampleoperator_controler.go worked out example)
 
 *For more detailed information in what is being done in the controller
-please read the comments*
+please read the inline comments in the code*
 
 ### Step 6 
 
@@ -130,12 +137,14 @@ To deploy and execute the controller (run locally so that we can verify/debug)
 execute the following
 
 ```
-KUBECONFIG=/<path-to-kubeconfig> make deploy
+export KUBECONFIG=<path-to-kubeconfig>
+
+make deploy
 
 # scale down the manager (so we can run locally)
 kubectl scale deployment.apps/operator-controller-manager -n operator-system  --replicas=0
 
-KUBECONFIG=/<path-to-kubeconfig> make run
+make run
 ```
 
 ### Step 8
@@ -159,6 +168,8 @@ spec:
 
 Apply the changes
 
+Open a new terminal to execute the following commands
+
 ```
 kubectl apply -f config/samples/app_v1alpha1_sampleoperator.yaml
 kubectl get pods
@@ -167,11 +178,13 @@ kubectl get pods
 
 ### Step 9
 
-Check the status of the controller
+Check the status of the controller 
 
 ```
 kubectl get sampleoperators.app.okd.io sample-instance -n operator-system -o yaml 
 ```
+
+You can also see the ouptut of the terminal (where you launched *make run*)
 
 ### Conclusion
 

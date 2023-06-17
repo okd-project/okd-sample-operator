@@ -32,3 +32,11 @@ curl -fsSL "$GOLANG_DOWNLOAD_URL" -o golang.tar.gz \
 curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s ${GOLANGCI_LINT_VERSION} \
     && sudo mv ./bin/golangci-lint /usr/local/bin \
     && rm -rf ./bin
+
+# install go tools
+
+CONTROLLER_TOOLS_VERSION=v0.11.1
+
+go install sigs.k8s.io/controller-tools/cmd/controller-gen@${CONTROLLER_TOOLS_VERSION}
+go install sigs.k8s.io/controller-runtime/tools/setup-envtest@latest
+
