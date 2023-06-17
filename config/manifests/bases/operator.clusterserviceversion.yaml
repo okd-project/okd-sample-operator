@@ -4,7 +4,7 @@ metadata:
   annotations:
     alm-examples: '[]'
     capabilities: Basic Install
-  name: operator.v0.0.1
+  name: okd-sample-operator.v0.0.1
   namespace: placeholder
 spec:
   apiservicedefinitions: {}

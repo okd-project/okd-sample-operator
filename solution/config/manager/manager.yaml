@@ -70,7 +70,7 @@ spec:
         - /manager
         args:
         - --leader-elect
-        image: quay.io/okd/sample-operator:v0.0.1
+        image: quay.io/okd/okd-sample-operator:v0.0.1
         #imagePullPolicy: Always
         name: manager
         securityContext:

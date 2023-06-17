@@ -29,7 +29,7 @@ BUNDLE_METADATA_OPTS ?= $(BUNDLE_CHANNELS) $(BUNDLE_DEFAULT_CHANNEL)
 #
 # For example, running 'make bundle-build bundle-push catalog-build catalog-push' will build and push both
 # okd.io/operator-bundle:$VERSION and okd.io/operator-catalog:$VERSION.
-IMAGE_TAG_BASE ?= quay.io/okd/sample-operator
+IMAGE_TAG_BASE ?= quay.io/okd/okd-sample-operator
 
 # Image version to to build/push
 IMG_VERSION ?= v0.0.1
