@@ -1,0 +1,52 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: ClusterServiceVersion
+metadata:
+  annotations:
+    alm-examples: '[]'
+    capabilities: Basic Install
+  name: operator.v0.0.1
+  namespace: placeholder
+spec:
+  apiservicedefinitions: {}
+  customresourcedefinitions:
+    owned:
+    - description: SampleOperator is the Schema for the sampleoperators API
+      displayName: Sample Operator
+      kind: SampleOperator
+      name: sampleoperators.app.okd.io
+      version: v1alpha1
+  description: a simple quick start operator (for the okd-community)
+  displayName: okd-sample-operator
+  icon:
+  - base64data: ""
+    mediatype: ""
+  install:
+    spec:
+      deployments: null
+    strategy: ""
+  installModes:
+  - supported: true
+    type: OwnNamespace
+  - supported: false
+    type: SingleNamespace
+  - supported: false
+    type: MultiNamespace
+  - supported: false
+    type: AllNamespaces
+  keywords:
+  - sample
+  - operator
+  - quick-start
+  links:
+  - name: Operator
+    url: https://github.com/okd-project/okd-sample-operator
+  maintainers:
+  - email: aguidih@redhat.com
+    name: alex
+  - email: luzuccar@redhat.com
+    name: luigi
+  maturity: alpha
+  provider:
+    name: okd-team
+    url: okd.io
+  version: 0.0.1

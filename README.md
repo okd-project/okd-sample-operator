@@ -190,12 +190,18 @@ You can also see the ouptut of the terminal (where you launched *make run*)
 
 This is an extremely simple solution, you may want to add other types of objects to watch/deploy
 
-Use the makefile to build and push your specific version to a registry
+Use the makefile to build and push your specific version to a registry.
+
+Commit your final changes to git. 
 
 The project **okd-operator-pipeline** can now be utilized to build, deploy and create a catalog for this operator.
+using your git repo.
 
 For the **okd-operator-pipeline** to work on this repo consider using (or copying the make file in the solution)
 as it has the correct recipes for the pipeline.
+
+For more information on how to use and deploy the **okd-operator-pipeline** refer to the repository here 
+[okd-operator-pipeline](https://github.com/okd-project/okd-operator-pipeline)
 
 For more information about developing an operator please refer to the documentation for 
 [Operator SDK](https://sdk.operatorframework.io/docs/building-operators/golang/quickstart/)
