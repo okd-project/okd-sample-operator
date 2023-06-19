@@ -59,10 +59,19 @@ sudo ./operator-software-util.sh
 
 Once all the packages have been installed we are ready to start with the scaffolding of the operator
 
-**NB** A complete solution is provided in this repository (see the **solution** directory)
+**NB** A complete solution is provided in this repository as a reference.
 
-We have provided an opinionated **Makefile** in the solution directory (it's been tailored to use in the okd-operator-pipeline). 
-We recommend making a backup of the Makefile generated in *Step 1* and copy the solution/Makefile to the base directory
+Create a new directory in your main projects folder.
+
+as an example 
+
+```
+mkdir mysample-operator
+cd mysample-operator
+
+```
+
+We have provided an opinionated **Makefile** (it's been tailored to use in the okd-operator-pipeline). 
 
 
 ### Step 1
@@ -70,10 +79,9 @@ We recommend making a backup of the Makefile generated in *Step 1* and copy the 
 Create and initialize the project
 
 **N.B.** The operator-sdk init expects the base directory to be empty (i.e no files etc).
-Move the *README.md* and *operator-software-util.sh* to a tmp working directory (out of the base directory) for now
 
 ```
-operator-sdk init --domain okd.io --repo github.com/okd-project/sample-operator
+operator-sdk init --domain okd.io --repo github.com/<github-user-id>/mysample-operator
 ```
 
 ### Step 2
@@ -107,8 +115,31 @@ type SampleOperatorStatus struct {
 If you are editing the API definitions (as in Step 3), generate the manifests such 
 as CustomResource's or CustomResourceDefinition's by executing the following
 
-**N.B.** Remember to make a backup of the current *Makefile* and copy the *solution/Makefile* to the base directory
+**N.B.** Make a backup of the current **Makefile**
 
+```
+# we are in mysample-operator directory
+mv Makefile Makefile-bak
+```
+
+Copy the *Makefile* (from the solution we provided) to your working directory (mysample-operator)
+
+```
+cp ../Makefile .
+```
+
+**N.B.** Change the variables at the top of the Makefile
+
+```
+PROJECT ?= mysample-operator
+
+REGISTRY ?= <your-registry>
+
+NAMESPACE ?= <your-namespace>
+
+```
+
+Execute ther following commands
 
 ```
 make generate
@@ -209,7 +240,7 @@ Commit your final changes to git.
 The project **okd-operator-pipeline** can now be utilized to build, deploy and create a catalog for this operator.
 using your git repo.
 
-For the **okd-operator-pipeline** to work on this repo consider using (or copying the make file in the solution)
+For the **okd-operator-pipeline** to work on this repo consider using the makefile we have provided)
 as it has the correct recipes for the pipeline.
 
 For more information on how to use and deploy the **okd-operator-pipeline** refer to the repository here 
