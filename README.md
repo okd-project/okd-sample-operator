@@ -180,7 +180,7 @@ make run
 
 ### Step 8
 
-Edit the file config/samples/app_v1alpha1_sampleoperator.yaml to show the folling
+Edit the file config/samples/app_v1alpha1_sampleoperator.yaml to show the following
 
 ```
 apiVersion: app.okd.io/v1alpha1
